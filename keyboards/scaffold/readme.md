@@ -1,7 +1,6 @@
-Choubboard
-======
-the [Choubboard](https://github.com/choubbi/choubboard) is a split keyboard with analog sticks as pointing devices. It is inspired by many sources, like the Absolem, the Kyria, and the Ferris.
-![Imgur](https://i.imgur.com/7y0Vbyd.jpg)
+Scaffold
+========
+the [Scaffold](https://github.com/choubbikeyboards/scaffold) is a split keyboard with analog sticks used as a pointing device and a scroll wheel. It is inspired by many sources, like the Absolem, the Kyria, and the Ferris.
 
 
 ## First Time Setup
@@ -11,18 +10,18 @@ Download or clone the `qmk_firmware` repo and navigate to its top level director
 Depending on your Layout chose one of the follwing commands:
 
 ```
-$ make choubboard/YOUR_BOARD:YOUR_KEYMAP_NAME
+$ make scaffold:YOUR_KEYMAP_NAME
 ```
 
 example:
 ```
-$ make choubboard/choubboard_compact:default
+$ make scaffold:default
 ```
 
 If everything worked correctly you will see a file:
 
 ```
-choubboard_YOUR_BOARD_YOUR_KEYMAP_NAME.hex
+scaffold_YOUR_BOARD_YOUR_KEYMAP_NAME.hex
 ```
 
 For more information on customizing keymaps, take a look at the primary documentation for [Customizing Your Keymap](/docs/faq_keymap.md) in the main readme.md.
@@ -30,115 +29,18 @@ For more information on customizing keymaps, take a look at the primary document
 
 ## Keymaps
 
-### [choubboard_compact](/keyboards/choubboard/choubboard_compact/keymaps/)
-
 #### Default
-Simple QWERTY layout with tri-layer system.
-
-#### Colemak-dh
-Colemak-DH layout with tri-layer system.
-
-## Required Hardware
-
-Apart from diodes and key switches for the keyboard matrix in each half, you
-will need:
-
-* 2 Arduino Pro Micros. You can find these on AliExpress for ≈3.50USD each.
-* 2 TRRS sockets and 1 TRRS cable, or 2 TRS sockets and 1 TRS cable
-
-Alternatively, you can use any sort of cable and socket that has at least 3
-wires. If you want to use I2C to communicate between halves, you will need a
-cable with at least 4 wires and 2x 4.7kΩ pull-up resistors
-
-## Optional Hardware
-A speaker can be hooked-up to either side to the `5` (`C6`) pin and `GND`, and turned on via `AUDIO_ENABLE`.
-
-## Wiring
-
-The 3 wires of the TRS/TRRS cable need to connect GND, VCC, and digital pin 3 (i.e.
-PD0 on the ATmega32u4) between the two Pro Micros.
-
-Next, wire your key matrix to any of the remaining 17 IO pins of the pro micro
-and modify the `matrix.c` accordingly.
-
-The wiring for serial:
-
-![serial wiring](https://i.imgur.com/C3D1GAQ.png)
-
-The wiring for i2c:
-
-![i2c wiring](https://i.imgur.com/Hbzhc6E.png)
-
-The pull-up resistors may be placed on either half. It is also possible
-to use 4 resistors and have the pull-ups in both halves, but this is
-unnecessary in simple use cases.
-
-You can change your configuration between serial and i2c by modifying your `config.h` file.
+Simple QWERTY or Colemak-DH layout with tri-layer system.
+Edit the keymap.c file to adjust a few things first:
+* to choose between a QWERTY or Colemak DH base layout, comment the one you don't want and uncomment the one you want between `#define COLEMAK_DH_SCAFFOLD` and `//#define QWERTY_SCAFFOLD`. By default it is set to Colemak DH.
+* If you don't use OLED displays, skip this step. Otherwise, if you didn't install the bottom keys (to keep the traditional 3x5 layout for example), comment or remove the line `#define HAS_ADD_BOTTOM_ROW` to avoid displaying the layout for these keys that you can't use. For the same reason, if you kept the additional index columns free for joysticks, comment or remove the line `#define HAS_ADD_INDEX_COL`.
 
 ## Notes on Software Configuration
 
-the keymaps in here are for the 4x5 layout of the keyboard only.
+The default keymap is usable for the full 42-key keyboard, although it is targeted towards 3x5 and 4x4-1 layouts, and has redundant keys on the full board.
 
 ## Flashing
 
 To flash your firmware take a look at: [Flashing Instructions and Bootloader Information](https://docs.qmk.fm/#/flashing)
+I recommend using `EE_hands` (configured by default) to let each half know if which one it is no matter which half you plugged in: `make scaffold:default:avrdude-split-left` or `make scaffold:default:avrdude-split-right` to flash each half.
 
-
-## Choosing which board to plug the USB cable into (choosing Master)
-
-Because the two boards are identical, the firmware has logic to differentiate the left and right board.
-
-It uses two strategies to figure things out: looking at the EEPROM (memory on the chip) or looking if the current board has the usb cable.
-
-The EEPROM approach requires additional setup (flashing the eeprom) but allows you to swap the usb cable to either side.
-
-The USB cable approach is easier to setup and if you just want the usb cable on the left board, you do not need to do anything extra.
-
-### Setting the left hand as master
-
-If you always plug the usb cable into the left board, nothing extra is needed as this is the default. Comment out `EE_HANDS` and comment out `I2C_MASTER_RIGHT` or `MASTER_RIGHT` if for some reason it was set.
-
-### Setting the right hand as master
-
-If you always plug the usb cable into the right board, add an extra flag to your `config.h`
-```
- #define MASTER_RIGHT
-```
-
-### Setting EE_hands to use either hands as master
-
-If you define `EE_HANDS` in your `config.h`, you will need to set the
-EEPROM for the left and right halves.
-
-The EEPROM is used to store whether the
-half is left handed or right handed. This makes it so that the same firmware
-file will run on both hands instead of having to flash left and right handed
-versions of the firmware to each half. To flash the EEPROM file for the left
-half run:
-```
-make handwired/dactyl_promicro:default:dfu-split-left
-make handwired/dactyl_promicro:default:dfu-split-right
-```
-
-After you have flashed the EEPROM, you then need to set `EE_HANDS` in your config.h, rebuild the hex files and reflash.
-
-Note that you need to program both halves, but you have the option of using
-different keymaps for each half. You could program the left half with a QWERTY
-layout and the right half with a Colemak layout using bootmagic's default layout option.
-Then if you connect the left half to a computer by USB the keyboard will use QWERTY and Colemak when the
-right half is connected.
-
-
-Notes on Using Pro Micro 3.3V
------------------------------
-
-Do update the `F_CPU` parameter in `rules.mk` to `8000000` which reflects
-the frequency on the 3.3V board.
-
-Also, if the slave board is producing weird characters in certain columns,
-update the following line in `matrix.c` to the following:
-
-```
-// wait_us(30);  // without this wait read unstable value.
-wait_us(300);  // without this wait read unstable value.
-```
