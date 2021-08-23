@@ -1,7 +1,7 @@
 Scaffold
 ========
 the [Scaffold](https://github.com/choubbikeyboards/scaffold) is a split keyboard with analog sticks used as a pointing device and a scroll wheel. It is inspired by many sources, like the Absolem, the Kyria, and the Ferris.
-
+![Scaffold picture](https://github.com/choubbikeyboards/scaffold/blob/main/front.jpg)
 
 ## First Time Setup
 
