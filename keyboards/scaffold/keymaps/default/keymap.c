@@ -394,7 +394,6 @@ void print16b(char c, int x, int y, bool add4BlankPix)
         if(add4BlankPix)
             oled_write_raw_P(charF1Media24x16, 4);
         oled_write_raw_P(charF1Media24x16+(c-' ')*24+12, 12);
-        uprintf("%c/%dx%d\n", c, x, y);
     }
 }
 
@@ -423,14 +422,13 @@ void print16bFMedia(int c, int x, int y, bool add4BlankPix)
 
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-    return OLED_ROTATION_180;
+    return OLED_ROTATION_0;
 }
 
 // override core function: makes the slave side process keypresses, so we then know what layer to display on the oled
 bool should_process_keypress(void) { return true; }
 
 static void render_status(void) {
-oled_write_char('a', false);
 return;
     switch (get_highest_layer(layer_state)) {
         case _DEF_LAYER:
