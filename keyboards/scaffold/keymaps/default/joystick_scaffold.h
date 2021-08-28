@@ -1,20 +1,17 @@
 #pragma once
 
 typedef enum {
-    JOYSTICK_MODE_MOUSE_COARSE = 0,
-    JOYSTICK_MODE_MOUSE_FINE,
-    JOYSTICK_MODE_ARROWS,
+    JOYSTICK_MODE_MOUSE = 0,
     JOYSTICK_MODE_SCROLL,
     JOYSTICK_MODE_NONE
 } joystick_mode_t;
 
 // Parameters
-#define JOYSTICK_DEAD_ZONE 30       // Values below this are ignored for strongest component (deadzone)
+#define JOYSTICK_DEAD_ZONE 15      // Values below this are ignored for strongest component (deadzone)
 #define JOYSTICK_FINE_ZONE 50      // Values below this enable fine movement
 
 #define JOYSTICK_MODE JOYSTICK_MODE_MOUSE
-#define JOYSTICK_SPEED 16
-#define JOYSTICK_FINE_SPEED (256)
+#define JOYSTICK_SPEED 256
 #define JOYSTICK_SCROLL_SPEED 256
 
 #define JOYSTICK_EIGHT_AXIS true
@@ -26,6 +23,16 @@ typedef enum {
 #define JOYSTICK_RANGE_START 0
 #define JOYSTICK_RANGE_STOP 1023
 #define JOYSTICK_RANGE_CENTER (JOYSTICK_RANGE_STOP - JOYSTICK_RANGE_START + 1) / 2
+#define JOYSTICKS_CALIBRATED true // set to true only if you measured the center of each axis of each joystick you use.
+// Don't mind the values for the sticks you didn't install, but be sure to put their role to JOYSTICK_MODE_NONE
+#define JOYSTICK_RANGE_CENTER_LIX 470
+#define JOYSTICK_RANGE_CENTER_LIY 515
+#define JOYSTICK_RANGE_CENTER_LTX 472
+#define JOYSTICK_RANGE_CENTER_LTY 515
+#define JOYSTICK_RANGE_CENTER_RIX 509
+#define JOYSTICK_RANGE_CENTER_RIY 543
+#define JOYSTICK_RANGE_CENTER_RTX 505
+#define JOYSTICK_RANGE_CENTER_RTY 489
 #define JOYSTICK_RANGE_MOVEMENT (JOYSTICK_RANGE_CENTER - JOYSTICK_DEAD_ZONE)
 
 #include "timer.h"
@@ -47,8 +54,8 @@ typedef struct {
     joystick_vector_t   centerIndex;
     uint16_t            deadZone;
     uint16_t            fineZone;
-    uint16_t            speed;
-    uint16_t            fineSpeed;
+    int16_t             speed;
+    int16_t             scroll_speed;
     float               axisSeparation;
     bool                eightAxis;
 } joystick_config_t;
@@ -66,9 +73,6 @@ typedef struct {
     joystick_vector_t    vector_slave_thumb;
     joystick_vector_t    pointerVector;
     joystick_vector_t    scrollVector;
-    joystick_vector_t    arrowVector;
-    joystick_direction_t direction;
-    joystick_direction_t lastDirection;
     uint8_t              buttons;
     report_mouse_t       report;
 } joystick_state_t;
@@ -96,6 +100,9 @@ void joystick_state_raw(uint16_t* slave_state);
 // executed by master: update joystick_state with data from slave
 void joystick_update_raw(uint16_t* slave_state);
 #endif
+
+// for manual calibration
+void print_joysticks(void);
 
 // update function vectors with new [x/y] components according to mode
 void joystick_update_vectors(uint16_t x, uint16_t y, joystick_mode_t mode);
