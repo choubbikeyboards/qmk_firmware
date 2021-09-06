@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef JOYSTICK_SCAFFOLD_ENABLE
+
 typedef enum {
     JOYSTICK_MODE_MOUSE = 0,
     JOYSTICK_MODE_SCROLL,
@@ -8,6 +10,7 @@ typedef enum {
 
 // Parameters
 #define JOYSTICK_DEAD_ZONE 15      // Values below this are ignored for strongest component (deadzone)
+#define JOYSTICK_DEAD_ZONE_UNCALIBRATED 30 // Values below this are ignored for strongest component (deadzone)
 #define JOYSTICK_FINE_ZONE 50      // Values below this enable fine movement
 
 #define JOYSTICK_MODE JOYSTICK_MODE_MOUSE
@@ -23,7 +26,7 @@ typedef enum {
 #define JOYSTICK_RANGE_START 0
 #define JOYSTICK_RANGE_STOP 1023
 #define JOYSTICK_RANGE_CENTER (JOYSTICK_RANGE_STOP - JOYSTICK_RANGE_START + 1) / 2
-#define JOYSTICKS_CALIBRATED true // set to true only if you measured the center of each axis of each joystick you use.
+#define JOYSTICKS_CALIBRATED false // set to true only if you measured the center of each axis of each joystick you use.
 // Don't mind the values for the sticks you didn't install, but be sure to put their role to JOYSTICK_MODE_NONE
 #define JOYSTICK_RANGE_CENTER_LIX 470
 #define JOYSTICK_RANGE_CENTER_LIY 515
@@ -95,10 +98,10 @@ int16_t joystick_get_component(pin_t pin, uint16_t center, bool flip);
 
 #ifdef SPLIT_KEYBOARD
 // executed by slave: collect joystick state and write joystick data in transport buffer
-void joystick_state_raw(uint16_t* slave_state);
+void joystick_state_raw(void);
 
 // executed by master: update joystick_state with data from slave
-void joystick_update_raw(uint16_t* slave_state);
+void joystick_update_raw(void);
 #endif
 
 // for manual calibration
@@ -125,4 +128,6 @@ joystick_direction_t joystick_get_discretized_direction(joystick_vector_t vector
 void joystick_process(void);
 
 void update_keycode_status(uint16_t keycode, bool last, bool current);
+
+#endif
 

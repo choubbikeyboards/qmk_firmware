@@ -1,5 +1,47 @@
+#ifdef JOYSTICK_SCAFFOLD_ENABLE
+
 #include "joystick_scaffold.h"
+#include "transactions.h"
 #include "print.h"
+
+typedef struct _slave_to_master_t {
+    int16_t index_x;
+    int16_t index_y;
+    int16_t thumb_x;
+    int16_t thumb_y;
+} slave_to_master_t;
+
+slave_to_master_t *p_s2m_joysticks_scaffold;
+slave_to_master_t s2m_joysticks_scaffold;
+
+void user_sync_a_slave_handler(uint8_t in_buflen, const void* in_data, uint8_t out_buflen, void* out_data) {
+    p_s2m_joysticks_scaffold = (slave_to_master_t*)out_data;
+    if (!is_keyboard_master())
+        joystick_state_raw();
+}
+
+void keyboard_post_init_user(void) {
+    transaction_register_rpc(USER_SYNC_A, user_sync_a_slave_handler);
+}
+
+void housekeeping_task_user(void) {
+    if (is_keyboard_master()) {
+        // Interact with slave every 500ms
+        static uint32_t last_sync = 0;
+        if (timer_elapsed32(last_sync) > 10)
+        {
+            if(transaction_rpc_exec(USER_SYNC_A, 0, NULL, sizeof(s2m_joysticks_scaffold), &s2m_joysticks_scaffold))
+            {
+                last_sync = timer_read32();
+                if (s2m_joysticks_scaffold.index_x != 0 || s2m_joysticks_scaffold.index_y != 0 || s2m_joysticks_scaffold.thumb_x != 0 || s2m_joysticks_scaffold.thumb_y != 0)
+                    uprintf("Slave side: %d, %d, %d, %d, %d\n", s2m_joysticks_scaffold.index_x, s2m_joysticks_scaffold.index_y, s2m_joysticks_scaffold.thumb_x, s2m_joysticks_scaffold.thumb_y);
+                else
+                    print(".");
+                joystick_update_raw();
+            }
+        }
+    }
+}
 
 void joystick_init(void)
 {
@@ -8,8 +50,13 @@ void joystick_init(void)
     joystick_state.config.mode_rt           = JOYSTICK_MODE_MOUSE;
     joystick_state.config.mode_ri           = JOYSTICK_MODE_SCROLL;
     joystick_state.config.mode_lt           = JOYSTICK_MODE_MOUSE;
-    joystick_state.config.mode_li           = JOYSTICK_MODE_MOUSE;
+    joystick_state.config.mode_li           = JOYSTICK_MODE_SCROLL;
+#if JOYSTICKS_CALIBRATED
     joystick_state.config.deadZone          = JOYSTICK_DEAD_ZONE;
+#endif
+#if !JOYSTICKS_CALIBRATED
+    joystick_state.config.deadZone          = JOYSTICK_DEAD_ZONE_UNCALIBRATED;
+#endif
     joystick_state.config.fineZone          = JOYSTICK_FINE_ZONE;
     joystick_state.config.speed             = JOYSTICK_SPEED;
     joystick_state.config.scroll_speed      = JOYSTICK_SCROLL_SPEED;
@@ -75,15 +122,23 @@ int16_t joystick_get_component(pin_t pin, uint16_t center, bool flip)
 
 void joystick_get_components(joystick_vector_t* vector, joystick_vector_t center, joystick_mode_t mode, pin_t pinX, pin_t pinY, bool flipX, bool flipY)
 {
-    uint32_t analogX = analogReadPin(pinX);
-    uint32_t analogY = analogReadPin(pinY);
-    bool positiveX = analogX > center.x;
-    bool positiveY = analogY > center.y;
+    uint32_t analogX;
+    uint32_t analogY;
+    bool positiveX;
+    bool positiveY;
     uint32_t force;
-    if(true)//(mode == JOYSTICK_MODE_MOUSE)
+    // dirty hack: reading only once the analog values seems to bring buggy results, mostly on the slave side (voltage too low?), reading twice seems to fix that.
+    analogY = analogReadPin(pinY);
+    analogX = analogReadPin(pinX);
+    analogY = analogReadPin(pinY);
+    analogX = analogReadPin(pinX);
+    positiveX = analogX > center.x;
+    positiveY = analogY > center.y;
+    if(true)//(mode == JOYSTICK_MODE_MOUSE) -- replace (true) to limit proportional response to a specific mode, mouse here
     {
         analogX = positiveX ? analogX - center.x : center.x - analogX;
         analogY = positiveY ? analogY - center.y : center.y - analogY;
+
         if(analogX < joystick_state.config.deadZone && analogY < joystick_state.config.deadZone)
         {
             vector->x = 0;
@@ -91,7 +146,7 @@ void joystick_get_components(joystick_vector_t* vector, joystick_vector_t center
         }
         else
         {
-uprintf("%lu, (%d,%u)/(%d,%u)\n", force, analogReadPin(pinX), center.x, analogReadPin(pinY), center.y);
+//uprintf("%lu, (%d, %d), (%d,%u)/(%d,%u)\n", force, analogX, analogY, analogReadPin(pinX), center.x, analogReadPin(pinY), center.y);
             force =  (analogX*analogX) + (analogY*analogY);
             // change response curve, stronger acceleration the further away from the dead zone
             analogX = ((analogX * force)>>13)+1;
@@ -103,47 +158,48 @@ uprintf("%lu, (%d,%u)/(%d,%u)\n", force, analogReadPin(pinX), center.x, analogRe
             vector->y = positiveY ^ flipY ? analogY : -analogY;
         }
     }
-    else // only fine mouse movements get x^2 curve, others are linear
+    else // if linear response is needed, it's here
     {
         vector->x   = joystick_get_component(pinX, center.x, flipX);
         vector->y   = joystick_get_component(pinY, center.y, flipY);
-    }    
+    }
 }
 
 #ifdef SPLIT_KEYBOARD
 // executed by slave: collect joystick state and write joystick data in transport buffer
-void joystick_state_raw(uint16_t* slave_state)
+void joystick_state_raw(void)
 {
     joystick_vector_t vector;
     // copy data from this side
     if(isLeftHand)
     {
         joystick_get_components(&vector, joystick_state.config.centerIndex, joystick_state.config.mode_li, INDEX_STICK_L_PIN_X, INDEX_STICK_L_PIN_Y, INDEX_STICK_L_FLIP_X, INDEX_STICK_L_FLIP_Y);
-        slave_state[0] = vector.x;
-        slave_state[1] = vector.y;
+        p_s2m_joysticks_scaffold->index_x = vector.x;
+        p_s2m_joysticks_scaffold->index_y = vector.y;
         joystick_get_components(&vector, joystick_state.config.centerThumb, joystick_state.config.mode_lt, THUMB_STICK_L_PIN_X, THUMB_STICK_L_PIN_Y, THUMB_STICK_L_FLIP_X, THUMB_STICK_L_FLIP_Y);
-        slave_state[2] = vector.x; 
-        slave_state[3] = vector.y; 
+        p_s2m_joysticks_scaffold->thumb_x = vector.x; 
+        p_s2m_joysticks_scaffold->thumb_y = vector.y; 
     }
     else
     {
         joystick_get_components(&vector, joystick_state.config.centerIndex, joystick_state.config.mode_ri, INDEX_STICK_R_PIN_X, INDEX_STICK_R_PIN_Y, INDEX_STICK_R_FLIP_X, INDEX_STICK_R_FLIP_Y);
-        slave_state[0] = vector.x;
-        slave_state[1] = vector.y;
+        p_s2m_joysticks_scaffold->index_x = vector.x;
+        p_s2m_joysticks_scaffold->index_y = vector.y;
         joystick_get_components(&vector, joystick_state.config.centerThumb, joystick_state.config.mode_rt, THUMB_STICK_R_PIN_X, THUMB_STICK_R_PIN_Y, THUMB_STICK_R_FLIP_X, THUMB_STICK_R_FLIP_Y);
-        slave_state[2] = vector.x; 
-        slave_state[3] = vector.y; 
+        p_s2m_joysticks_scaffold->thumb_x = vector.x; 
+        p_s2m_joysticks_scaffold->thumb_y = vector.y; 
     }
+
 }
 
 // executed by master: update joystick_state with data from slave
-void joystick_update_raw(uint16_t* slave_state)
+void joystick_update_raw(void)
 {
     // copy data from the other side
-    joystick_state.vector_slave_index.x = slave_state[0];
-    joystick_state.vector_slave_index.y = slave_state[1];
-    joystick_state.vector_slave_thumb.x = slave_state[2];
-    joystick_state.vector_slave_thumb.y = slave_state[3];
+    joystick_state.vector_slave_index.x = s2m_joysticks_scaffold.index_x;
+    joystick_state.vector_slave_index.y = s2m_joysticks_scaffold.index_y;
+    joystick_state.vector_slave_thumb.x = s2m_joysticks_scaffold.thumb_x;
+    joystick_state.vector_slave_thumb.y = s2m_joysticks_scaffold.thumb_y;
 }
 #endif
 
@@ -171,6 +227,8 @@ void joystick_update_vectors(uint16_t x, uint16_t y, joystick_mode_t mode)
             default:
                 break;
         }
+        if (x != 0 || y != 0)
+            uprintf("master side: %d, %d\n", x, y);
 }
 
 // Clear vector values, except their decimal part (keep accumulated micro-movements)
@@ -230,20 +288,6 @@ void joystick_release_buttons(uint8_t buttons)
     joystick_state.buttons  = joystick_state.buttons & (~buttons);
 }
 
-//void joystick_mode_set(joystick_mode_t mode) { joystick_state.config.mode = mode; }
-
-//joystick_mode_t joystick_mode_get(void) { return joystick_state.config.mode; }
-
-//void joystick_mode_cycle(bool reverse) {
-//    joystick_mode_t mode = joystick_mode_get();
-//    if (reverse) {
-//        mode = (mode == 0) ? (_JOYSTICK_MODE_LAST - 1) : (mode - 1);
-//    } else {
-//        mode = (mode == (_JOYSTICK_MODE_LAST - 1)) ? 0 : (mode + 1);
-//    }
-//    joystick_mode_set(mode);
-//}
-
 // Fix direction within one of 8 axes (or 4 if 8-axis is disabled)
 joystick_direction_t joystick_get_discretized_direction(joystick_vector_t vector, bool eightAxis)
 {
@@ -272,13 +316,9 @@ joystick_direction_t joystick_get_discretized_direction(joystick_vector_t vector
     return direction;
 }
 
-joystick_direction_t scrollDirection;  // Declaring global to save stack space
-int16_t component;
-
 // main function called from pointing_device_task()
 void joystick_process(void)
 {
-static  int8_t minx=0;
     if (timer_elapsed(joystickTimer) > JOYSTICK_TIMEOUT)
     {
         joystickTimer = timer_read();
@@ -291,8 +331,6 @@ static  int8_t minx=0;
             joystick_state.report.x = 127;
         else
             joystick_state.report.x = joystick_state.pointerVector.x / joystick_state.config.speed;
-if(joystick_state.report.x<minx){
-minx=joystick_state.report.x;uprintf("X min %d\n", minx);}
 
         if(joystick_state.pointerVector.y/joystick_state.config.speed < -127)
             joystick_state.report.y = -127;
@@ -341,6 +379,14 @@ void pointing_device_task(void)
 
     // Get stick values and convert them to a pointer/scrollwheel report
     joystick_process();
+    if (joystick_state.report.h != 0)
+        uprintf("h%d ", joystick_state.report.h);
+    if (joystick_state.report.v != 0)
+        uprintf("v%d ", joystick_state.report.v);
+    if (joystick_state.report.x != 0)
+        uprintf("x%d ", joystick_state.report.x);
+    if (joystick_state.report.y != 0)
+        uprintf("y%d ", joystick_state.report.y);
     // Set mouse pointer report
     report.x = joystick_state.report.x;
     report.y = joystick_state.report.y;
@@ -352,4 +398,6 @@ void pointing_device_task(void)
     pointing_device_set_report(report);
     pointing_device_send();
 }
+
+#endif
 
