@@ -34,8 +34,7 @@ SLEEP_LED_ENABLE = no    # Breathing sleep LED during USB suspend
 
 # Don't change these, as the custom split transport code is needed for communicating joystick data
 SPLIT_KEYBOARD = yes
-SPLIT_TRANSPORT = custom
-SRC += transport.c serial.c
+SPLIT_TRANSPORT = serial
 
 OLED_DRIVER_ENABLE = yes  # Enables the use of OLED displays
 

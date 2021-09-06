@@ -202,7 +202,7 @@ enum combos {
 
     // mouse layer: only mouse buttons
       [_MOUSE] = LAYOUT(
-        KC_TRNS,  KC_F15,   KC_F14,   KC_F13,   KC_TRNS,           KC_TRNS,  KC_F13,   KC_F14,   KC_F15,   KC_TRNS,
+        KC_TRNS,  KC_LCLK,  KC_MCLK,  KC_RCLK,  KC_TRNS,           KC_TRNS,  KC_RCLK,  KC_MCLK,  KC_LCLK,  KC_TRNS,
         KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,           KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
         KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,           KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
                   KC_TRNS,  KC_TRNS,  KC_TRNS,                               KC_TRNS,  KC_TRNS,  KC_TRNS,
