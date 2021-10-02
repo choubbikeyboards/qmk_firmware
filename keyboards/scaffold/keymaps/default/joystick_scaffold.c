@@ -109,10 +109,7 @@ int16_t joystick_get_component(pin_t pin, uint16_t center, bool flip)
     if (distance < joystick_state.config.deadZone)
         distance    = 0;
     else
-        if (distance < joystick_state.config.deadZone + joystick_state.config.fineZone)
-            distance    = 1;
-        else
-            distance    -= joystick_state.config.deadZone + joystick_state.config.fineZone;
+        distance    -= joystick_state.config.deadZone + joystick_state.config.fineZone;
     // Compute component (range of [0 to 1023])
     if (flip)
         return directionIsPositive ? distance : -(int16_t)distance;
