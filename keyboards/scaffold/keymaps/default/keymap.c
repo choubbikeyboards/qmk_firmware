@@ -160,7 +160,9 @@ enum combos {
 #ifdef COLEMAK_DH_SCAFFOLD
         KC_Q,    KC_W,    KC_F,    KC_P,       KC_B,       KC_J,      KC_L,    KC_U,    KC_Y,    KC_GRV,
         KC_A,    KC_ALTR, KC_LSHS, KC_CTLT,    KC_G,       KC_M,      KC_CTLN, KC_LSHE, KC_ALTI, MSE_O,
-        KC_GUIZ, KC_X,    KC_C,    KC_D,       KC_V,       KC_K,      KC_H,    KC_K,    KC_J,    KC_QUOT,
+        KC_GUIZ, KC_X,    KC_C,    KC_D,       KC_V,       KC_K,      KC_H,    KC_COMM, KC_DOT,  KC_QUOT,
+// 4x4 layout: uncomment below and comment above
+//        KC_GUIZ, KC_X,    KC_C,    KC_D,       KC_V,       KC_K,      KC_H,    KC_K,    KC_J,    KC_QUOT,
                  KC_B,    KC_G,    KC_V,                              KC_M,    KC_COMM, KC_DOT, 
 #endif
 #ifdef QWERTY_SCAFFOLD
