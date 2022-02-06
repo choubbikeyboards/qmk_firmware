@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __SCAFFOLD_JOYSTICK_
+#define __SCAFFOLD_JOYSTICK_
 
 #ifdef JOYSTICK_SCAFFOLD_ENABLE
 
@@ -43,6 +45,12 @@ typedef enum {
 #include "analog.h"
 #include "split_util.h"
 #include "pointing_device.h"
+
+// global variables for wheel scrolling without joysticks (can be useful when you don't want to over-sroll)
+uint8_t add_wheel_up;
+uint8_t add_wheel_down;
+uint8_t add_wheel_right;
+uint8_t add_wheel_left;
 
 typedef struct {
     int16_t x;
@@ -130,5 +138,6 @@ void joystick_process(void);
 
 void update_keycode_status(uint16_t keycode, bool last, bool current);
 
-#endif
+#endif //JOYSTICK_SCAFFOLD_ENABLE
+#endif //__SCAFFOLD_JOYSTICK_
 

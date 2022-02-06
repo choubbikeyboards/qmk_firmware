@@ -464,6 +464,7 @@ void pointing_device_init(void)
 // QMK function overwrite
 void pointing_device_task(void)
 {
+    uint8_t tmp;
     report_mouse_t report = pointing_device_get_report();
 
     // Get stick values and convert them to a pointer/scrollwheel report
@@ -483,8 +484,20 @@ void pointing_device_task(void)
     report.x = joystick_state.report.x;
     report.y = joystick_state.report.y;
     // Set mouse scroll wheel report
-    report.h = joystick_state.report.h;
-    report.v = joystick_state.report.v;
+    tmp = add_wheel_right;
+    report.h = tmp;
+    add_wheel_right -= tmp;
+    tmp = add_wheel_left;
+    report.h -= tmp;
+    add_wheel_left -= tmp;
+    report.h += joystick_state.report.h;
+    tmp = add_wheel_up;
+    report.v = tmp;
+    add_wheel_up -= tmp;
+    tmp = add_wheel_down;
+    report.v -= tmp;
+    add_wheel_down -= tmp;
+    report.v += joystick_state.report.v;
     report.buttons = joystick_state.buttons;
 
     pointing_device_set_report(report);

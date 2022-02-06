@@ -17,11 +17,11 @@
 #endif
 
 // mod-taps with 16b keycodes (code in keycode processing function)
-#define GUI_PLUS LGUI_T(KC_F18)
-#define GUI_COLN LGUI_T(KC_F13)
-#define GUI_UNDS LGUI_T(KC_F14)
-#define CTL_LTHN LCTL_T(KC_F15)
-#define ALT_GTHN LALT_T(KC_F16)
+#define GUI_PLUS LGUI_T(KC_F20)
+#define GUI_COLN LGUI_T(KC_F21)
+#define GUI_UNDS LGUI_T(KC_F22)
+#define CTL_LTHN LCTL_T(KC_F23)
+#define ALT_GTHN LALT_T(KC_F24)
 
 // normal mod-taps
 #define KC_GUIZ LGUI_T(KC_Z)
@@ -50,6 +50,10 @@
 #define KC_RCLK KC_F13 // TBD - mouse clicks
 #define KC_MCLK KC_F14 // TBD - mouse clicks
 #define KC_LCLK KC_F15 // TBD - mouse clicks
+#define KC_WHUP KC_F16 // TBD - mouse wheel movements
+#define KC_WHDN KC_F17 // TBD - mouse wheel movements
+#define KC_WHLT KC_F18 // TBD - mouse wheel movements
+#define KC_WHRT KC_F19 // TBD - mouse wheel movements
 
 enum layers {
     _DEF_LAYER = 0,
@@ -86,242 +90,263 @@ enum combos {
 };
 
 #ifdef COLEMAK_DH_SCAFFOLD
-    const uint16_t PROGMEM wf_combo[]    = {KC_W, KC_F,       COMBO_END};
-    const uint16_t PROGMEM uy_combo[]    = {KC_U, KC_Y,       COMBO_END};
-    const uint16_t PROGMEM fp_combo[]    = {KC_F, KC_P,       COMBO_END};
-    const uint16_t PROGMEM lu_combo[]    = {KC_L, KC_U,       COMBO_END};
-    const uint16_t PROGMEM cd_combo[]    = {KC_C, KC_D,       COMBO_END};
-    const uint16_t PROGMEM hk_combo[]    = {KC_H, KC_K,       COMBO_END};
-    const uint16_t PROGMEM cc_combo[]    = {KC_K, KC_C,       COMBO_END};
-    const uint16_t PROGMEM altf4_combo[] = {KC_Q, KC_P, KC_G, COMBO_END};
-    const uint16_t PROGMEM cut_combo[]   = {KC_Z, KC_D,       COMBO_END};
-    const uint16_t PROGMEM copy_combo[]  = {KC_Z, KC_C,       COMBO_END};
-    const uint16_t PROGMEM paste_combo[] = {KC_X, KC_D,       COMBO_END};
+const uint16_t PROGMEM wf_combo[]    = {KC_W, KC_F,       COMBO_END};
+const uint16_t PROGMEM uy_combo[]    = {KC_U, KC_Y,       COMBO_END};
+const uint16_t PROGMEM fp_combo[]    = {KC_F, KC_P,       COMBO_END};
+const uint16_t PROGMEM lu_combo[]    = {KC_L, KC_U,       COMBO_END};
+const uint16_t PROGMEM cd_combo[]    = {KC_C, KC_D,       COMBO_END};
+const uint16_t PROGMEM hk_combo[]    = {KC_H, KC_K,       COMBO_END};
+const uint16_t PROGMEM cc_combo[]    = {KC_K, KC_C,       COMBO_END};
+const uint16_t PROGMEM altf4_combo[] = {KC_Q, KC_P, KC_G, COMBO_END};
+const uint16_t PROGMEM cut_combo[]   = {KC_Z, KC_D,       COMBO_END};
+const uint16_t PROGMEM copy_combo[]  = {KC_Z, KC_C,       COMBO_END};
+const uint16_t PROGMEM paste_combo[] = {KC_X, KC_D,       COMBO_END};
 #endif
 #ifdef QWERTY_SCAFFOLD
-    const uint16_t PROGMEM wf_combo[]    = {KC_W, KC_E,       COMBO_END};
-    const uint16_t PROGMEM uy_combo[]    = {KC_I, KC_O,       COMBO_END};
-    const uint16_t PROGMEM fp_combo[]    = {KC_E, KC_R,       COMBO_END};
-    const uint16_t PROGMEM lu_combo[]    = {KC_U, KC_I,       COMBO_END};
-    const uint16_t PROGMEM cd_combo[]    = {KC_C, KC_V,       COMBO_END};
-    const uint16_t PROGMEM hk_combo[]    = {KC_N, KC_M,       COMBO_END};
-    const uint16_t PROGMEM cc_combo[]    = {KC_N, KC_C,       COMBO_END};
-    const uint16_t PROGMEM altf4_combo[] = {KC_Q, KC_R, KC_G, COMBO_END};
-    const uint16_t PROGMEM cut_combo[]   = {KC_Z, KC_V,       COMBO_END};
-    const uint16_t PROGMEM copy_combo[]  = {KC_Z, KC_C,       COMBO_END};
-    const uint16_t PROGMEM paste_combo[] = {KC_X, KC_V,       COMBO_END};
+const uint16_t PROGMEM wf_combo[]    = {KC_W, KC_E,       COMBO_END};
+const uint16_t PROGMEM uy_combo[]    = {KC_I, KC_O,       COMBO_END};
+const uint16_t PROGMEM fp_combo[]    = {KC_E, KC_R,       COMBO_END};
+const uint16_t PROGMEM lu_combo[]    = {KC_U, KC_I,       COMBO_END};
+const uint16_t PROGMEM cd_combo[]    = {KC_C, KC_V,       COMBO_END};
+const uint16_t PROGMEM hk_combo[]    = {KC_N, KC_M,       COMBO_END};
+const uint16_t PROGMEM cc_combo[]    = {KC_N, KC_C,       COMBO_END};
+const uint16_t PROGMEM altf4_combo[] = {KC_Q, KC_R, KC_G, COMBO_END};
+const uint16_t PROGMEM cut_combo[]   = {KC_Z, KC_V,       COMBO_END};
+const uint16_t PROGMEM copy_combo[]  = {KC_Z, KC_C,       COMBO_END};
+const uint16_t PROGMEM paste_combo[] = {KC_X, KC_V,       COMBO_END};
 #endif
 
-    combo_t key_combos[COMBO_COUNT] = {
-        // basic keycodes
-        [L_BSPC]   = COMBO(fp_combo,    KC_BSPC),
-        [L_ESC]    = COMBO(wf_combo,    KC_ESC),
-        [L_ENT]    = COMBO(cd_combo,    KC_ENT),
-        [R_ESC]    = COMBO(uy_combo,    KC_ESC),
-        [R_DEL]    = COMBO(lu_combo,    KC_DEL),
-        [R_ENT]    = COMBO(hk_combo,    KC_ENT),
-        [C_CED]    = COMBO(cc_combo,    RALT(KC_COMM)),
-        // special actions
-        [QPG_QUIT] = COMBO_ACTION(altf4_combo),
-        [ZD_CUT]   = COMBO_ACTION(cut_combo),
-        [ZC_COPY]  = COMBO_ACTION(copy_combo),
-        [XD_PASTE] = COMBO_ACTION(paste_combo),
-    };
+combo_t key_combos[COMBO_COUNT] = {
+    // basic keycodes
+    [L_BSPC]   = COMBO(fp_combo,    KC_BSPC),
+    [L_ESC]    = COMBO(wf_combo,    KC_ESC),
+    [L_ENT]    = COMBO(cd_combo,    KC_ENT),
+    [R_ESC]    = COMBO(uy_combo,    KC_ESC),
+    [R_DEL]    = COMBO(lu_combo,    KC_DEL),
+    [R_ENT]    = COMBO(hk_combo,    KC_ENT),
+    [C_CED]    = COMBO(cc_combo,    RALT(KC_COMM)),
+    // special actions
+    [QPG_QUIT] = COMBO_ACTION(altf4_combo),
+    [ZD_CUT]   = COMBO_ACTION(cut_combo),
+    [ZC_COPY]  = COMBO_ACTION(copy_combo),
+    [XD_PASTE] = COMBO_ACTION(paste_combo),
+};
 
-    // special actions triggered by combos
-    void process_combo_event(uint16_t combo_index, bool pressed) {
-        switch(combo_index) {
-            case QPG_QUIT:
-              if (pressed) {
-                register_code(KC_LALT);
-                tap_code(KC_F4);
-                unregister_code(KC_LALT);
-              }
-              break;
-            case ZD_CUT:
-              if (pressed)
-                tap_code16(LCTL(KC_X));
-              break;
-            case ZC_COPY:
-              if (pressed)
-                tap_code16(LCTL(KC_C));
-              break;
-            case XD_PASTE:
-              if (pressed)
-                tap_code16(LCTL(KC_V));
-              break;
-        }
+// special actions triggered by combos
+void process_combo_event(uint16_t combo_index, bool pressed) {
+    switch(combo_index) {
+        case QPG_QUIT:
+          if (pressed) {
+            register_code(KC_LALT);
+            tap_code(KC_F4);
+            unregister_code(KC_LALT);
+          }
+          break;
+        case ZD_CUT:
+          if (pressed)
+            tap_code16(LCTL(KC_X));
+          break;
+        case ZC_COPY:
+          if (pressed)
+            tap_code16(LCTL(KC_C));
+          break;
+        case XD_PASTE:
+          if (pressed)
+            tap_code16(LCTL(KC_V));
+          break;
     }
+}
 
-    const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
-    {
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
+{
     // Base Layer
-      [_DEF_LAYER] = LAYOUT(
+    [_DEF_LAYER] = LAYOUT(
 #ifdef COLEMAK_DH_SCAFFOLD
-        KC_Q,    KC_W,    KC_F,    KC_P,       KC_B,       KC_J,      KC_L,    KC_U,    KC_Y,    KC_GRV,
-        KC_A,    KC_ALTR, KC_LSHS, KC_CTLT,    KC_G,       KC_M,      KC_CTLN, KC_LSHE, KC_ALTI, MSE_O,
-        KC_GUIZ, KC_X,    KC_C,    KC_D,       KC_V,       KC_K,      KC_H,    KC_COMM, KC_DOT,  KC_QUOT,
-// 4x4 layout: uncomment below and comment above
-//        KC_GUIZ, KC_X,    KC_C,    KC_D,       KC_V,       KC_K,      KC_H,    KC_K,    KC_J,    KC_QUOT,
-                 KC_B,    KC_G,    KC_V,                              KC_M,    KC_COMM, KC_DOT, 
+        KC_Q,    KC_W,    KC_F,    KC_P,       KC_B,            KC_J,        KC_L,           KC_U,    KC_Y,    KC_GRV,
+        KC_A,    KC_ALTR, KC_LSHS, KC_CTLT,    KC_G,            KC_M,        KC_CTLN,        KC_LSHE, KC_ALTI, MSE_O,
+        KC_GUIZ, KC_X,    KC_C,    KC_D,       KC_V,            KC_K,        KC_H,           KC_COMM, KC_DOT,  KC_QUOT,
+                 KC_B,    KC_V,    KC_G,                                     KC_M,           KC_K,    KC_J, 
 #endif
 #ifdef QWERTY_SCAFFOLD
 // QWERTY
-        KC_Q,    KC_W,    KC_E,    KC_R,       KC_T,       KC_Y,       KC_U,          KC_I,    KC_O,    KC_P,
-        KC_A,    KC_ALTS, KC_LSHD, KC_CTLF,    KC_G,       KC_H,       KC_CTLJ,       KC_LSHK, KC_ALTL, MSE_SCLN,
-        KC_GUIZ, KC_X,    KC_C,    KC_V,       KC_B,       KC_N,       KC_M,          KC_COMM, KC_DOT,  KC_SLSH,
-                 KC_T,    KC_G,    KC_B,                               KC_N,          KC_H,    KC_Y, 
+        KC_Q,    KC_W,    KC_E,    KC_R,       KC_T,            KC_Y,        KC_U,           KC_I,    KC_O,    KC_P,
+        KC_A,    KC_ALTS, KC_LSHD, KC_CTLF,    KC_G,            KC_H,        KC_CTLJ,        KC_LSHK, KC_ALTL, MSE_SCLN,
+        KC_GUIZ, KC_X,    KC_C,    KC_V,       KC_B,            KC_N,        KC_M,           KC_COMM, KC_DOT,  KC_SLSH,
+                 KC_T,    KC_G,    KC_B,                                     KC_N,           KC_H,    KC_Y, 
 #endif
-                          KC_NO,   KC_SPACE,  LOWER_TAB,   RAISE_BSPC, OSM(MOD_LSFT), KC_NO
-      ),
+                          KC_NO,   KC_SPACE,  LOWER_TAB,        RAISE_BSPC,  OSM(MOD_LSFT),  KC_NO
+    ),
 
     // Lower layer: num pad, symbols, navigation, {}
-      [_LOWER] = LAYOUT(
+    [_LOWER] = LAYOUT(
         KC_MINS,  KC_7,         KC_8,         KC_9,          KC_0,    ND_CIRC,       KC_CIRC,  KC_PIPE,        KC_SLSH,  KC_UNDS,
         GUI_PLUS, LALT_T(KC_4), LSFT_T(KC_5), LCTL_T(KC_6),  KC_ASTR, S(RALT(KC_4)), CTL_LTHN, LSFT_T(KC_EQL), ALT_GTHN, KC_RAMN,
         KC_SLSH,  KC_1,         KC_2,         KC_3,          KC_DOT,  KC_NO,         KC_LCBR,  KC_CIRC,        KC_RCBR,  KC_ENT,
                   KC_ASTR,      KC_0,         KC_DOT,                                KC_ASTR,  KC_SCLN,        KC_COLN, 
                                 KC_TRNS,      KC_TRNS,       KC_TRNS, KC_TRNS,       KC_TRNS,  KC_TRNS
-      ),
+    ),
 
     // raise layer: symbols, navigation, ()
-      [_RAISE] = LAYOUT(
+    [_RAISE] = LAYOUT(
         KC_EXLM,  KC_AT,    KC_HASH, KC_DLR,  ND_CIRC,   ND_DQT,  KC_BSLS,  KC_PIPE, KC_SLSH, KC_UNDS,
         KC_QUES,  KC_AMPR,  KC_PERC, KC_EUR,  ND_TILD,   ND_QUOT, KC_LEFT,  KC_UP,   KC_RGHT, KC_RAMN,
         GUI_COLN, KC_ASTR,  KC_CIRC, KC_GBP,  ND_GRV,    KC_COLN, KC_LPRN,  KC_DOWN, KC_RPRN, KC_ENT,
                   KC_TILD,  KC_DEGR, KC_YEN,                      KC_ASTR,  KC_SCLN, KC_COLN,
                             KC_TRNS, KC_TRNS, KC_TRNS,   KC_TRNS, KC_TRNS,  KC_TRNS
-      ),
+    ),
 
     // adjust layer: function keys, navigation, []
-      [_ADJUST] = LAYOUT(
+    [_ADJUST] = LAYOUT(
         KC_PAUS,  KC_F7,         KC_F8,         KC_F9,         KC_F10,    KC_NO,   KC_H,            KC_J,            KC_K,           KC_L,
         KC_PSCR,  LALT_T(KC_F4), LSFT_T(KC_F5), LCTL_T(KC_F6), KC_F11,    KC_NO,   LCTL_T(KC_HOME), LSFT_T(KC_PGUP), LALT_T(KC_END), KC_RAMN,
         GUI_INS,  KC_F1,         KC_F2,         KC_F3,         KC_F12,    KC_NO,   KC_LBRC,         KC_PGDN,         KC_RBRC,        KC_ENT,
                   KC_F10,        KC_F11,        KC_F12,                            KC_ASTR,         KC_SCLN,         KC_COLN,
                                  KC_TRNS,       KC_TRNS,       KC_TRNS,   KC_TRNS, KC_TRNS,         KC_TRNS
-      ),
+    ),
 
     // mouse layer: only mouse buttons
-      [_MOUSE] = LAYOUT(
+    [_MOUSE] = LAYOUT(
         KC_TRNS,  KC_LCLK,  KC_MCLK,  KC_RCLK,  KC_TRNS,           KC_TRNS,  KC_RCLK,  KC_MCLK,  KC_LCLK,  KC_TRNS,
-        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,           KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
-        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,           KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WHUP,  KC_TRNS,           KC_TRNS,  KC_WHUP,  KC_TRNS,  KC_TRNS,  KC_TRNS,
+        KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WHDN,  KC_TRNS,           KC_TRNS,  KC_WHDN,  KC_TRNS,  KC_TRNS,  KC_TRNS,
                   KC_TRNS,  KC_TRNS,  KC_TRNS,                               KC_TRNS,  KC_TRNS,  KC_TRNS,
                                  KC_TRNS, KC_TRNS, KC_TRNS,     KC_TRNS, KC_TRNS, KC_TRNS
-      )
-    };
+    )
+};
 
-    bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-      switch (keycode) {
-        case LOWER_TAB:
-              if (record->event.pressed) {
-                layer_on(_LOWER);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
-              } else {
-                layer_off(_LOWER);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
-              }
-              return true;
-        case RAISE_BSPC:
-              if (record->event.pressed) {
-                layer_on(_RAISE);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
-              } else {
-                layer_off(_RAISE);
-                update_tri_layer(_LOWER, _RAISE, _ADJUST);
-              }
-              return true;
-        case ND_QUOT:
-              if (record->event.pressed) {
-                SEND_STRING("' ");
-              }
-              break;
-        case ND_DQT:
-              if (record->event.pressed) {
-                SEND_STRING("\" ");
-              }
-              break;
-        case ND_CIRC:
-              if (record->event.pressed) {
-                SEND_STRING("^ ");
-              }
-              break;
-        case ND_GRV:
-              if (record->event.pressed) {
-                SEND_STRING("` ");
-              }
-              break;
-        case ND_TILD:
-              if (record->event.pressed) {
-                SEND_STRING("~ ");
-              }
-              break;
-        case GUI_COLN:
-              if (record->tap.count > 0) {
-                if (record->event.pressed) {
-                  tap_code16(KC_COLN);
-                }
-                return false;
-              }
-              break;
-        case GUI_UNDS:
-              if (record->tap.count > 0) {
-                if (record->event.pressed) {
-                  tap_code16(KC_UNDS);
-                }
-                return false;
-              }
-              break;
-        case CTL_LTHN:
-              if (record->tap.count > 0) {
-                if (record->event.pressed) {
-                  tap_code16(KC_LT);
-                }
-                return false;
-              }
-              break;
-        case GUI_PLUS:
-              if (record->tap.count > 0) {
-                if (record->event.pressed) {
-                  tap_code16(KC_PLUS);
-                }
-                return false;
-              }
-              break;
-        case ALT_GTHN:
-              if (record->tap.count > 0) {
-                if (record->event.pressed) {
-                  tap_code16(KC_GT);
-                }
-                return false;
-              }
-              break;
-        case KC_F13:
-            if (record->event.pressed)
-                joystick_press_buttons(MOUSE_BTN1);
-            else
-                joystick_release_buttons(MOUSE_BTN1);
-            return false;
-        case KC_F14:
-            if (record->event.pressed)
-                joystick_press_buttons(MOUSE_BTN2);
-            else
-                joystick_release_buttons(MOUSE_BTN2);
-            return false;
-        case KC_F15:
-            if (record->event.pressed)
-                joystick_press_buttons(MOUSE_BTN3);
-            else
-                joystick_release_buttons(MOUSE_BTN3);
+bool process_record_user(uint16_t keycode, keyrecord_t *record)
+{
+  switch (keycode)
+  {
+    case LOWER_TAB:
+          if (record->event.pressed) {
+            layer_on(_LOWER);
+            update_tri_layer(_LOWER, _RAISE, _ADJUST);
+          } else {
+            layer_off(_LOWER);
+            update_tri_layer(_LOWER, _RAISE, _ADJUST);
+          }
+          return true;
+    case RAISE_BSPC:
+          if (record->event.pressed) {
+            layer_on(_RAISE);
+            update_tri_layer(_LOWER, _RAISE, _ADJUST);
+          } else {
+            layer_off(_RAISE);
+            update_tri_layer(_LOWER, _RAISE, _ADJUST);
+          }
+          return true;
+    case ND_QUOT:
+          if (record->event.pressed) {
+            SEND_STRING("' ");
+          }
+          break;
+    case ND_DQT:
+          if (record->event.pressed) {
+            SEND_STRING("\" ");
+          }
+          break;
+    case ND_CIRC:
+          if (record->event.pressed) {
+            SEND_STRING("^ ");
+          }
+          break;
+    case ND_GRV:
+          if (record->event.pressed) {
+            SEND_STRING("` ");
+          }
+          break;
+    case ND_TILD:
+          if (record->event.pressed) {
+            SEND_STRING("~ ");
+          }
+          break;
+    case GUI_COLN:
+          if (record->tap.count > 0) {
+            if (record->event.pressed) {
+              tap_code16(KC_COLN);
+            }
             return false;
           }
-        return true;
-    };
-
-    layer_state_t layer_state_set_user(layer_state_t state) {
-        return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+          break;
+    case GUI_UNDS:
+          if (record->tap.count > 0) {
+            if (record->event.pressed) {
+              tap_code16(KC_UNDS);
+            }
+            return false;
+          }
+          break;
+    case CTL_LTHN:
+          if (record->tap.count > 0) {
+            if (record->event.pressed) {
+              tap_code16(KC_LT);
+            }
+            return false;
+          }
+          break;
+    case GUI_PLUS:
+          if (record->tap.count > 0) {
+            if (record->event.pressed) {
+              tap_code16(KC_PLUS);
+            }
+            return false;
+          }
+          break;
+    case ALT_GTHN:
+          if (record->tap.count > 0) {
+            if (record->event.pressed) {
+              tap_code16(KC_GT);
+            }
+            return false;
+          }
+          break;
+    case KC_F13:
+        if (record->event.pressed)
+            joystick_press_buttons(MOUSE_BTN1);
+        else
+            joystick_release_buttons(MOUSE_BTN1);
+        return false;
+    case KC_F14:
+        if (record->event.pressed)
+            joystick_press_buttons(MOUSE_BTN2);
+        else
+            joystick_release_buttons(MOUSE_BTN2);
+        return false;
+    case KC_F15:
+        if (record->event.pressed)
+            joystick_press_buttons(MOUSE_BTN3);
+        else
+            joystick_release_buttons(MOUSE_BTN3);
+        return false;
+    // Scroll wheel up
+    case KC_F16:
+        if (record->event.pressed)
+            add_wheel_up++;
+        return false;
+    // Scroll wheel down
+    case KC_F17:
+        if (record->event.pressed)
+            add_wheel_down++;
+        return false;
+// LATERAL WHEEL MOVEMENT TO BE TESTED! MIGHT BE INVERTED.
+    // Scroll wheel right
+    case KC_F18:
+        if (record->event.pressed)
+            add_wheel_right++;
+        return false;
+    // Scroll wheel left
+    case KC_F19:
+        if (record->event.pressed)
+            add_wheel_left++;
+        return false;
     }
+    return true;
+};
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+}
 
 #ifdef OLED_DRIVER_ENABLE
 

@@ -17,11 +17,11 @@
 #endif
 
 // mod-taps with 16b keycodes (code in keycode processing function)
-#define GUI_PLUS LGUI_T(KC_F16)
-#define GUI_COLN LGUI_T(KC_F17)
-#define GUI_UNDS LGUI_T(KC_F18)
-#define CTL_LTHN LCTL_T(KC_F19)
-#define ALT_GTHN LALT_T(KC_F20)
+#define GUI_PLUS LGUI_T(KC_F20)
+#define GUI_COLN LGUI_T(KC_F21)
+#define GUI_UNDS LGUI_T(KC_F22)
+#define CTL_LTHN LCTL_T(KC_F23)
+#define ALT_GTHN LALT_T(KC_F24)
 
 // normal mod-taps
 #define KC_GUIZ LGUI_T(KC_Z)
@@ -47,9 +47,13 @@
 #define KC_DEGR S(RALT(KC_SCLN)) // °
 
 // Mouse clicks
-#define KC_RCLK KC_F13 // TBD - mouse clicks
-#define KC_MCLK KC_F14 // TBD - mouse clicks
-#define KC_LCLK KC_F15 // TBD - mouse clicks
+#define KC_LCLK KC_F13 // TBD - mouse clicks
+#define KC_RCLK KC_F14 // TBD - mouse clicks
+#define KC_MCLK KC_F15 // TBD - mouse clicks
+#define KC_WHUP KC_F16 // TBD - mouse wheel movements
+#define KC_WHDN KC_F17 // TBD - mouse wheel movements
+#define KC_WHLT KC_F18 // TBD - mouse wheel movements
+#define KC_WHRT KC_F19 // TBD - mouse wheel movements
 
 enum layers
 {
@@ -192,8 +196,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
     // mouse layer: only mouse buttons
     [_MOUSE] = LAYOUT(
         KC_TRNS,  KC_MCLK,      KC_RCLK,        KC_LCLK,       KC_TRNS,     KC_TRNS,       KC_LCLK,         KC_RCLK,         KC_MCLK,        KC_TRNS,
-        KC_TRNS,  KC_TRNS,      KC_TRNS,        KC_TRNS,       KC_TRNS,     KC_TRNS,       KC_TRNS,         KC_TRNS,         KC_TRNS,        KC_TRNS,
-        KC_TRNS,  KC_TRNS,      KC_TRNS,        KC_TRNS,       KC_TRNS,     KC_TRNS,       KC_TRNS,         KC_TRNS,         KC_TRNS,        KC_TRNS,
+        KC_TRNS,  KC_TRNS,      KC_TRNS,        KC_WHUP,       KC_TRNS,     KC_TRNS,       KC_WHUP,         KC_TRNS,         KC_TRNS,        KC_TRNS,
+        KC_TRNS,  KC_TRNS,      KC_TRNS,        KC_WHDN,       KC_TRNS,     KC_TRNS,       KC_WHDN,         KC_TRNS,         KC_TRNS,        KC_TRNS,
                   KC_TRNS,      KC_TRNS,        KC_TRNS,                                   KC_TRNS,         KC_TRNS,         KC_TRNS,
                                 KC_TRNS,        KC_TRNS,       KC_TRNS,     KC_TRNS,       KC_TRNS,         KC_TRNS
     )
@@ -201,8 +205,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
-  switch (keycode)
-  {
+    switch (keycode)
+    {
     case LOWER_TAB:
           if (record->event.pressed)
           {
@@ -308,27 +312,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
           }
           break;
     case KC_F13:
-        // right-click
-        if (record->event.pressed)
-            joystick_press_buttons(MOUSE_BTN2);
-        else
-            joystick_release_buttons(MOUSE_BTN2);
-        return false;
-    case KC_F14:
-        // middle-click
-        if (record->event.pressed)
-            joystick_press_buttons(MOUSE_BTN3);
-        else
-            joystick_release_buttons(MOUSE_BTN3);
-        return false;
-    case KC_F15:
-        // left-click
         if (record->event.pressed)
             joystick_press_buttons(MOUSE_BTN1);
         else
             joystick_release_buttons(MOUSE_BTN1);
         return false;
-      }
+    case KC_F14:
+        if (record->event.pressed)
+            joystick_press_buttons(MOUSE_BTN2);
+        else
+            joystick_release_buttons(MOUSE_BTN2);
+        return false;
+    case KC_F15:
+        if (record->event.pressed)
+            joystick_press_buttons(MOUSE_BTN3);
+        else
+            joystick_release_buttons(MOUSE_BTN3);
+        return false;
+    // Scroll wheel up
+    case KC_F16:
+        if (record->event.pressed)
+            add_wheel_up++;
+        return false;
+    // Scroll wheel down
+    case KC_F17:
+        if (record->event.pressed)
+            add_wheel_down++;
+        return false;
+// LATERAL WHEEL MOVEMENT TO BE TESTED! MIGHT BE INVERTED.
+    // Scroll wheel right
+    case KC_F18:
+        if (record->event.pressed)
+            add_wheel_right++;
+        return false;
+    // Scroll wheel left
+    case KC_F19:
+        if (record->event.pressed)
+            add_wheel_left++;
+        return false;
+    }
     return true;
 };
 
